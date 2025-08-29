@@ -57,6 +57,12 @@ In this project, we use **AmoebaNet-Small**, which is lightweight enough for **C
 
 ---
 
+
+## Colab Notebook 
+
+https://colab.research.google.com/drive/1TRTdU60KI_2SZmL8dHcwUSaf2o_2-T96?usp=drive_link
+
+
 ## ⚙️ Installation  
 
 Clone the repo:  
@@ -64,5 +70,3 @@ Clone the repo:
 git clone https://github.com/your-username/gpipe-amoebanet.git
 cd gpipe-amoebanet
 
-
-https://colab.research.google.com/drive/1TRTdU60KI_2SZmL8dHcwUSaf2o_2-T96#scrollTo=NsY8fBeAovgk
