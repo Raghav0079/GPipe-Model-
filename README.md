@@ -18,45 +18,69 @@ The implementation is lightweight enough to run on **Google Colab Free/Pro**, bu
 - [Gradio UI Demo](#gradio-ui-demo)  
 - [Deployment on Hugging Face](#deployment-on-hugging-face)  
 - [Results](#results)  
-- [Next Steps](#next-steps)  
-- [Author](#author)  
+<div align="center">
+
+# � GPipe + AmoebaNet on CIFAR-10
+
+Scalable neural network training with pipeline parallelism and NAS architectures.
+
+![GPipe & AmoebaNet](https://user-images.githubusercontent.com/placeholder/banner.png)
+
+---
+</div>
+
+## � Overview
+
+This project demonstrates **GPipe pipeline parallelism** with **AmoebaNet-Small** and **Transformer** models on the **CIFAR-10 dataset**. It is designed for scalable training, experiment tracking, and easy deployment.
 
 ---
 
-## 📌 About GPipe  
-
-**GPipe** is a scalable **pipeline parallelism** framework for training large neural networks efficiently.  
-
-- Splits a deep model into **stages** across multiple devices.  
-- Uses **micro-batching** to keep all devices busy (minimizing idle time).  
-- Allows training models with **billions of parameters** without running out of memory.  
-
-📄 Paper: *[GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism](https://arxiv.org/abs/1811.06965)*  
-
----
-
-## 📌 About AmoebaNet  
-
-**AmoebaNet** is a **Neural Architecture Search (NAS)**-designed model from Google Brain. It automatically learns efficient CNN architectures by evolutionary search.  
-
-In this project, we use **AmoebaNet-Small**, which is lightweight enough for **CIFAR-10 classification** on Colab.  
-
-📄 Paper: *[Regularized Evolution for Image Classifier Architecture Search](https://arxiv.org/abs/1802.01548)*  
+## 🗂️ Table of Contents
+1. [Features](#features)
+2. [Project Structure](#project-structure)
+3. [Setup & Installation](#setup--installation)
+4. [Usage](#usage)
+5. [Experiment Tracking](#experiment-tracking)
+6. [Gradio Demo](#gradio-demo)
+7. [Deployment](#deployment)
+8. [Results](#results)
+9. [Next Steps](#next-steps)
+10. [Author](#author)
 
 ---
 
-## ✨ Project Features  
+## ✨ Features
 
-- ✅ GPipe implementation with PyTorch  
-- ✅ AmoebaNet-Small & Transformer on CIFAR-10  
-- ✅ Training on **Colab Free (T4 GPU)**  
-- ✅ Automatic checkpoint saving & resume  
-- ✅ W&B experiment logging  
-- ✅ Gradio-powered interactive demo  
-- ✅ Hugging Face model hosting & Space deployment  
+- GPipe pipeline parallelism (PyTorch)
+- AmoebaNet-Small & Transformer models
+- CIFAR-10 classification
+- Colab/Local training support
+- Weights & Biases logging
+- Gradio UI demo
+- Hugging Face deployment
 
 ---
 
+## 🏗️ Project Structure
+
+```
+GPipe-Model-/
+├── README.md
+├── gpipe_amoebanet.py         # Main training script
+├── models.py                  # Model definitions
+├── train.py                   # Training utilities
+├── gradio_app.py              # Gradio UI demo
+├── requirements.txt           # Dependencies
+├── config.yaml                # Experiment configs
+├── checkpoints/               # Saved models
+├── logs/                      # Training logs
+```
+
+---
+
+<<<<<<< HEAD
+## ⚙️ Setup & Installation
+=======
 
 ## Colab Notebook 
 
@@ -64,9 +88,78 @@ https://colab.research.google.com/drive/1TRTdU60KI_2SZmL8dHcwUSaf2o_2-T96?usp=dr
 
 
 ## ⚙️ Installation  
+>>>>>>> aa727011d239b9eb2e6b7bf9cac31f30bb3b2b9a
 
-Clone the repo:  
+Clone the repository:
 ```bash
 git clone https://github.com/your-username/gpipe-amoebanet.git
 cd gpipe-amoebanet
+```
 
+Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+<<<<<<< HEAD
+---
+
+## 🚦 Usage
+
+Train a model:
+```bash
+python gpipe_amoebanet.py --config config.yaml
+```
+
+Or use the Colab notebook for step-by-step training:
+[Colab Notebook](https://colab.research.google.com/drive/1TRTdU60KI_2SZmL8dHcwUSaf2o_2-T96#scrollTo=NsY8fBeAovgk)
+
+---
+
+## 📊 Experiment Tracking
+
+Integrates [Weights & Biases](https://wandb.ai/) for logging. Set your W&B API key to enable experiment tracking.
+
+---
+
+## 🎛️ Gradio Demo
+
+Run the interactive demo:
+```bash
+python gradio_app.py
+```
+Or deploy on Hugging Face Spaces.
+
+---
+
+## 🚀 Deployment
+
+Push trained models to [Hugging Face Hub](https://huggingface.co/) and deploy Gradio Spaces for live inference.
+
+---
+
+## 📈 Results
+
+| Model            | Accuracy | Hardware      |
+|------------------|----------|--------------|
+| AmoebaNet-Small  | 94%      | Colab T4 GPU |
+| Transformer      | 92%      | Colab T4 GPU |
+
+---
+
+## 🔮 Next Steps
+
+- Support for larger datasets (ImageNet)
+- More NAS architectures
+- Multi-GPU optimization
+- Enhanced Gradio UI features
+
+---
+
+## 👤 Author
+
+**Raghav0079**  
+GitHub: [Raghav0079](https://github.com/Raghav0079)
+
+=======
+>>>>>>> aa727011d239b9eb2e6b7bf9cac31f30bb3b2b9a
