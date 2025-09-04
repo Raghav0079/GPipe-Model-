@@ -1,4 +1,3 @@
-# GPipe-Model-
 # 🚀 GPipe + AmoebaNet on CIFAR-10  
 
 This project demonstrates **scalable neural network training** using **GPipe pipeline parallelism** with **AmoebaNet-Small** and **Transformer-based** architectures on the **CIFAR-10 dataset**.  
@@ -7,27 +6,6 @@ The implementation is lightweight enough to run on **Google Colab Free/Pro**, bu
 
 ---
 
-## 📖 Table of Contents
-- [About GPipe](#about-gpipe)  
-- [About AmoebaNet](#about-amoebanet)  
-- [Project Features](#project-features)  
-- [Installation](#installation)  
-- [Project Structure](#project-structure)  
-- [Training](#training)  
-- [Experiment Tracking (Weights & Biases)](#experiment-tracking-weights--biases)  
-- [Gradio UI Demo](#gradio-ui-demo)  
-- [Deployment on Hugging Face](#deployment-on-hugging-face)  
-- [Results](#results)  
-<div align="center">
-
-# � GPipe + AmoebaNet on CIFAR-10
-
-Scalable neural network training with pipeline parallelism and NAS architectures.
-
-![GPipe & AmoebaNet](https://user-images.githubusercontent.com/placeholder/banner.png)
-
----
-</div>
 
 ## � Overview
 
@@ -35,17 +13,20 @@ This project demonstrates **GPipe pipeline parallelism** with **AmoebaNet-Small*
 
 ---
 
+
 ## 🗂️ Table of Contents
-1. [Features](#features)
-2. [Project Structure](#project-structure)
-3. [Setup & Installation](#setup--installation)
-4. [Usage](#usage)
-5. [Experiment Tracking](#experiment-tracking)
-6. [Gradio Demo](#gradio-demo)
-7. [Deployment](#deployment)
-8. [Results](#results)
-9. [Next Steps](#next-steps)
-10. [Author](#author)
+
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Setup & Installation](#setup--installation)
+- [Colab Notebook](#colab-notebook)
+- [Usage](#usage)
+- [Experiment Tracking](#experiment-tracking)
+- [Gradio Demo](#gradio-demo)
+- [Deployment](#deployment)
+- [Results](#results)
+- [Next Steps](#next-steps)
+- [Author](#author)
 
 ---
 
@@ -55,88 +36,88 @@ This project demonstrates **GPipe pipeline parallelism** with **AmoebaNet-Small*
 - AmoebaNet-Small & Transformer models
 - CIFAR-10 classification
 - Colab/Local training support
-- Weights & Biases logging
-- Gradio UI demo
-- Hugging Face deployment
 
----
+## 📓 Colab Notebook
 
-## 🏗️ Project Structure
+[Open in Colab](https://colab.research.google.com/drive/1TRTdU60KI_2SZmL8dHcwUSaf2o_2-T96?usp=drive_link)
 
-```
-GPipe-Model-/
-├── README.md
-├── gpipe_amoebanet.py         # Main training script
-├── models.py                  # Model definitions
-├── train.py                   # Training utilities
-├── gradio_app.py              # Gradio UI demo
-├── requirements.txt           # Dependencies
-├── config.yaml                # Experiment configs
-├── checkpoints/               # Saved models
-├── logs/                      # Training logs
-```
-
----
-
-<<<<<<< HEAD
-## ⚙️ Setup & Installation
-=======
-
-## Colab Notebook 
-
-https://colab.research.google.com/drive/1TRTdU60KI_2SZmL8dHcwUSaf2o_2-T96?usp=drive_link
-
-
-## ⚙️ Installation  
->>>>>>> aa727011d239b9eb2e6b7bf9cac31f30bb3b2b9a
-
-Clone the repository:
-```bash
-git clone https://github.com/your-username/gpipe-amoebanet.git
-cd gpipe-amoebanet
-```
-
-Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-<<<<<<< HEAD
 ---
 
 ## 🚦 Usage
 
 Train a model:
+
 ```bash
 python gpipe_amoebanet.py --config config.yaml
 ```
 
-Or use the Colab notebook for step-by-step training:
-[Colab Notebook](https://colab.research.google.com/drive/1TRTdU60KI_2SZmL8dHcwUSaf2o_2-T96#scrollTo=NsY8fBeAovgk)
+Or use the [Colab Notebook](https://colab.research.google.com/drive/1TRTdU60KI_2SZmL8dHcwUSaf2o_2-T96?usp=drive_link) for step-by-step training.
 
 ---
 
-## 📊 Experiment Tracking
+## 📚 About GPipe
 
-Integrates [Weights & Biases](https://wandb.ai/) for logging. Set your W&B API key to enable experiment tracking.
+**GPipe** is a scalable pipeline parallelism framework for training large neural networks efficiently. It splits a deep model into stages across multiple devices and uses micro-batching to keep all devices busy, minimizing idle time. This enables training models with billions of parameters without running out of memory.
+
+**Reference:**
+> Huang et al., "GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism" ([arXiv:1811.06965](https://arxiv.org/abs/1811.06965))
+
+---
+
+## 🧬 About AmoebaNet
+
+**AmoebaNet** is a Neural Architecture Search (NAS)-designed model from Google Brain. It automatically learns efficient CNN architectures by evolutionary search. In this project, we use AmoebaNet-Small, which is lightweight enough for CIFAR-10 classification on Colab.
+
+**Reference:**
+> Real et al., "Regularized Evolution for Image Classifier Architecture Search" ([arXiv:1802.01548](https://arxiv.org/abs/1802.01548))
+
+---
+
+## � Experiment Tracking
+
+This project integrates [Weights & Biases](https://wandb.ai/) for:
+- Logging training/validation metrics
+- Visualizing loss, accuracy, and hyperparameters
+- Comparing multiple runs and configurations
+
+**How to use:**
+1. Login with `wandb login`
+2. Training logs will be automatically synced
+3. View results on your W&B dashboard
 
 ---
 
 ## 🎛️ Gradio Demo
 
-Run the interactive demo:
+Run the interactive demo locally:
+
 ```bash
 python gradio_app.py
 ```
-Or deploy on Hugging Face Spaces.
+
+**Features:**
+- Upload an image and get CIFAR-10 class prediction
+- Visualize model confidence and output
+- Try both AmoebaNet and Transformer models
 
 ---
 
-## 🚀 Deployment
+## � Deployment
 
-Push trained models to [Hugging Face Hub](https://huggingface.co/) and deploy Gradio Spaces for live inference.
+**Hugging Face Hub:**
+- Share trained models with the community
+- Version control and easy download
+
+**Gradio Spaces:**
+- Deploy interactive demos for public use
 
 ---
+
+
+It is ideal for students, researchers, and ML engineers interested in distributed training, NAS, and practical deployment workflows.
+
+---
+
 
 ## 📈 Results
 
