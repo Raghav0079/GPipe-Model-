@@ -1,0 +1,304 @@
+\documentclass[12pt]{article}
+
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{enumitem}  % Added for proper enumeration
+\setlist[enumerate]{leftmargin=1cm} % Set left margin for enumerate globally
+\usepackage{float}     % Added for precise table placement
+\usepackage{multirow}  % Added for multirow in tables
+\usepackage{tikz}      % Added for tikzpicture diagrams
+\usetikzlibrary{positioning} % Added for node positioning (right=of, above=of, etc.)
+\date{} % This disables the date in the output PDF
+\title{GPipe Analysis}
+\author{Raghav Mishra}
+
+
+\begin{document}
+
+\maketitle
+
+\section{First Pass}
+\begin{itemize}
+  \item It is used mainly for efficient and task-independent model parallelism.
+  \item GPipe, a pipeline parallelism library that allows scaling any network that can be expressed as a sequence of layers.
+  \item Provides the flexibility of scaling a variety of different networks to gigantic sizes efficiently.
+  \item Training large-scale neural networks on two different tasks:
+    \begin{enumerate}[label=(\roman*)]
+      \item Image Classification: Training a 557-million-parameter AmoebaNet model that attains a top-1 accuracy of 84.4\% on ImageNet-2012.
+      \item Multilingual Neural Machine Translation: Training a single 6-billion-parameter, 128-layer Transformer model on a corpus spanning over 100 languages, achieving better quality than all bilingual models.
+    \end{enumerate}
+\end{itemize}
+
+\section{Second Pass}
+\begin{itemize}
+  \item GPipe allows scaling arbitrary deep neural network architectures beyond the memory limitations of a single accelerator by partitioning the model across different accelerators and supporting re-materialization on every accelerator.
+  \item Gradient updates using GPipe are consistent regardless of the number of partitions, allowing researchers to easily train increasingly large models by deploying more accelerators.
+  \item Experimental results on two tasks:
+    \begin{enumerate}[label=(\roman*)]
+      \item Image classification: Training the AmoebaNet model on 480 × 480 input from the ImageNet 2012 dataset. By increasing the model width, they scale up the number of parameters to 557 million and achieve a top-1 validation accuracy of 84.4\%.
+      \item Machine translation: Training a single 128-layer 6-billion-parameter multilingual Transformer model on 103 languages (102 languages to English).
+    \end{enumerate}
+  \item Model is capable of outperforming the individually trained 350-million-parameter bilingual Transformer Big models on 100 language pairs.
+  \item Introduction of GPipe : a scalable model-parallelism library for training giant neural networks
+  \item Novel batch-splitting pipeline-parallelism algorithm that uses synchronous gradient updates, allowing model parallelism with high hardware utilization and training stability.
+  \item GPipe performance with two very different types of model architectures: an AmoebaNet  convolutional model and a Transformer  sequence-to-sequence model.
+  \item Study of scalability , efficiency and communication cost 
+  \item Amoeba Net : experiments on Cloud TPUv2s 8GB memory accelerator
+  \item GPipe reduces the intermediate activation memory requirements from 6.26GB to 3.46GB.
+  \item Enables a 318M parameter model on a single accelerator
+  \item Trained Transformer model on Cloud TPUv3s with 16GB memory per accelerator core. Fixed vocab size of 32k, seq length of 1024 and batch size of 32.
+  \item Transformer layer has 2048 for model dimension, 8192 for feed-forward hidden dimension and 32 attention heads
+  \item Re-materialization allows training a 2.7× larger model on a single accelerator. With 128 partitions, GPipe allows scaling Transformer up to 83.9B parameters, a 298× increase.
+  \item the number of micro-batches M is at least 4× the number of partitions, the bubble overhead is almost negligible
+  \item Transformer model, there is a 3.5× speedup when it is partitioned across four times more accelerators
+  \begin{table}[H]
+\centering
+\caption{Normalized training throughput using GPipe with different number of partitions ($K$) and micro-batches ($M$) on TPUs. Performance increases with more micro-batches. There is an almost linear speedup with the number of accelerators for Transformer model when $M \gg K$. Batch size was adjusted to fit memory if necessary.}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\multirow{2}{*}{$M$} & \multicolumn{3}{c|}{AmoebaNet} & \multicolumn{3}{c|}{Transformer} \\
+\cline{2-7}
+ & $K=2$ & $K=4$ & $K=8$ & $K=2$ & $K=4$ & $K=8$ \\
+\hline
+1  & 1    & 1.13 & 1.38 & 1   & 1.07 & 1.3 \\
+4  & 1.07 & 1.26 & 1.72 & 1.7 & 3.2  & 4.8 \\
+32 & 1.21 & 1.84 & 3.48 & 1.8 & 3.4  & 6.3 \\
+\hline
+\end{tabular}
+\end{table}
+\begin{table}[H]
+\centering
+\caption{Normalized training throughput using GPipe on GPUs without high-speed interconnect.}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\multirow{2}{*}{$M$} & \multicolumn{3}{c|}{AmoebaNet} & \multicolumn{3}{c|}{Transformer} \\
+\cline{2-7}
+ & $K=2$ & $K=4$ & $K=8$ & $K=2$ & $K=4$ & $K=8$ \\
+\hline
+32 & 1 & 1.7 & 2.7 & 1 & 1.8 & 3.3 \\
+\hline
+\end{tabular}
+\end{table}
+\begin{table}[H]
+\centering
+\caption{Image classification accuracy using AmoebaNet-B (18, 512) first trained on ImageNet 2012 then fine-tuned on others. Fine-tuned results averaged across 5 runs. Baseline results from Real et al. [12] and Cubuk et al. [26] were directly trained from scratch. *Mahajan et al.’s model [27] achieved 85.4\% top-1 accuracy but was pretrained on non-public Instagram data. Ngiam et al. [28] achieved better results by pre-training with data from a private dataset (JFT-300M).}
+\begin{tabular}{|l|r|r|r|c|c|}
+\hline
+Dataset         & \# Train  & \# Test  & \# Classes & Accuracy (\%) & Previous Best (\%) \\
+\hline
+ImageNet-2012   & 1,281,167 & 50,000   & 1000       & 84.4          & 83.9 [12] (85.4$^*$[27]) \\
+CIFAR-10        & 50,000    & 10,000   & 10         & 99.0          & 98.5 [26] \\
+CIFAR-100       & 50,000    & 10,000   & 100        & 91.3          & 89.3 [26] \\
+Stanford Cars   & 8,144     & 8,041    & 196        & 94.6          & 94.8$^*$ [26] \\
+Oxford Pets     & 3,680     & 3,369    & 37         & 95.9          & 93.8$^*$ [29] \\
+Food-101        & 75,750    & 25,250   & 101        & 93.0          & 90.4$^*$ [30] \\
+FGVC Aircraft   & 6,667     & 3,333    & 100        & 92.7          & 92.9$^*$ [31] \\
+Birdsnap        & 47,386    & 2,443    & 500        & 83.6          & 80.2$^*$ [32] \\
+\hline
+\end{tabular}
+\end{table}
+\end{itemize}
+\section{Third Pass}
+\begin{enumerate}
+  \item GPipe enables large-scale model parallelism using pipeline parallelism with micro-batches.  
+  \item Models are divided into sequential partitions that run on multiple accelerators.  
+  \item Micro-batch scheduling ensures high utilization and reduces idle time.  
+  \item It eliminates the memory constraints of single-device training.  
+  \item GPipe supports scaling models both in width and depth.  
+  \item The approach reduces communication overhead compared to naive model parallelism.  
+  \item GPipe works efficiently with synchronous training.  
+  \item Pipeline parallelism overlaps computation and communication.  
+  \item Checkpoints allow efficient memory use via re-materialization.  
+  \item GPipe scales to very large models with minimal code modifications.  
+  \item Experiments with CIFAR-10 validated the effectiveness of GPipe.  
+  \item AmoebaNet was used as a benchmark model for image classification.  
+  \item Scaling depth and width improved test accuracy significantly.  
+  \item GPipe achieved near-linear speedup with more devices.  
+  \item Partitioning into 4 accelerators improved throughput compared to 2.  
+  \item Even with communication overhead, training remained efficient.  
+  \item AmoebaNet models trained with GPipe reached state-of-the-art accuracy on CIFAR-10.  
+  \item Training larger networks became feasible without GPU OOM errors.  
+  \item Memory savings allowed deeper models to fit within hardware limits.  
+  \item GPipe provides flexibility for both research prototypes and production systems.  
+  \item GPipe was further applied to large-scale NLP, specifically multilingual machine translation (MMT).  
+  \item The dataset included 25 billion parallel sentences across 102 languages and English.  
+  \item Data spanned both low-resource and high-resource languages.  
+  \item Transformer models were scaled along depth (layers) and width (hidden size, attention heads).  
+  \item The base Transformer Big model had 400M parameters, denoted as $T(6,8192,16)$.  
+  \item Scaling produced models of 1.3B, 3B, and 6B parameters.  
+  \item Increasing model capacity improved BLEU scores across all languages.  
+  \item The 1.3B deep model outperformed the wide model for low-resource languages.  
+  \item Depth provided stronger generalization and transfer learning benefits.  
+  \item Larger models yielded diminishing returns beyond 3B parameters.  
+  \item Training instability was observed with deeper models due to sharp activations and noise.  
+  \item Logit clipping and scaled initialization were applied to stabilize training.  
+  \item These methods reduced exploding gradients and preserved convergence.  
+  \item Temperature-based sampling improved multilingual performance.  
+  \item Larger models significantly improved translation for low-resource languages.  
+  \item Bilingual baselines were outperformed by multilingual GPipe models.  
+  \item Model parallelism allowed training across up to 16 accelerators.  
+  \item BLEU scores increased consistently with model size.  
+  \item Data parallelism with very large batch sizes was also explored.  
+  \item Batch sizes scaled from 260K tokens to 4M tokens per step.  
+  \item The largest batch ever reported in NMT (4M tokens) improved BLEU performance.  
+  \item Increasing batch size reduced validation loss significantly.  
+  \item Both low-resource and high-resource language pairs benefited.  
+  \item GPipe’s efficiency enabled training such massive batches.  
+  \item Depth scaling was particularly beneficial for scarce languages.  
+  \item Width scaling primarily helped high-resource languages.  
+  \item A trade-off exists: deeper models generalize better, wider models converge faster.  
+  \item Pipeline parallelism enables distributed training with near-linear scaling.  
+  \item The combination of GPipe and Transformer scaling demonstrated new state-of-the-art in MMT.  
+  \item GPipe thus provides a general-purpose solution for scaling deep learning across domains.  
+
+
+% ---------------- GPipe Core ------------------
+\item GPipe enables large-scale model parallelism using pipeline parallelism with micro-batches.  
+\item Models are divided into sequential partitions that run on multiple accelerators.  
+\item Micro-batch scheduling ensures high utilization and reduces idle time.  
+\item It eliminates the memory constraints of single-device training.  
+\item GPipe supports scaling models both in width and depth.  
+\item The approach reduces communication overhead compared to naive model parallelism.  
+\item GPipe works efficiently with synchronous training.  
+\item Pipeline parallelism overlaps computation and communication.  
+\item Checkpoints allow efficient memory use via re-materialization.  
+\item GPipe scales to very large models with minimal code modifications.  
+
+
+% ---------------- CIFAR-10 & AmoebaNet ------------------
+\item Experiments with CIFAR-10 validated the effectiveness of GPipe.  
+\item AmoebaNet was used as a benchmark model for image classification.  
+\item Scaling depth and width improved test accuracy significantly.  
+\item GPipe achieved near-linear speedup with more devices.  
+\item Partitioning into 4 accelerators improved throughput compared to 2.  
+\item Even with communication overhead, training remained efficient.  
+\item AmoebaNet models trained with GPipe reached state-of-the-art accuracy on CIFAR-10.  
+\item Training larger networks became feasible without GPU OOM errors.  
+\item Memory savings allowed deeper models to fit within hardware limits.  
+\item GPipe provides flexibility for both research prototypes and production systems.  
+
+% ---------------- Multilingual Machine Translation ------------------
+\item GPipe was further applied to large-scale NLP, specifically multilingual machine translation (MMT).  
+\item The dataset included 25 billion parallel sentences across 102 languages and English.  
+\item Data spanned both low-resource and high-resource languages.  
+\item Transformer models were scaled along depth (layers) and width (hidden size, attention heads).  
+\item The base Transformer Big model had 400M parameters, denoted as $T(6,8192,16)$.  
+\item Scaling produced models of 1.3B, 3B, and 6B parameters.  
+\item Increasing model capacity improved BLEU scores across all languages.  
+\item The 1.3B deep model outperformed the wide model for low-resource languages.  
+\item Depth provided stronger generalization and transfer learning benefits.  
+\item Larger models yielded diminishing returns beyond 3B parameters.  
+
+% ---------------- Empirical Findings ------------------
+\item Training instability was observed with deeper models due to sharp activations and noise.  
+\item Logit clipping and scaled initialization were applied to stabilize training.  
+\item These methods reduced exploding gradients and preserved convergence.  
+\item Temperature-based sampling improved multilingual performance.  
+\item Larger models significantly improved translation for low-resource languages.  
+\item Bilingual baselines were outperformed by multilingual GPipe models.  
+\item Model parallelism allowed training across up to 16 accelerators.  
+\item BLEU scores increased consistently with model size.  
+\item Data parallelism with very large batch sizes was also explored.  
+\item Batch sizes scaled from 260K tokens to 4M tokens per step.  
+
+% ---------------- Large-Batch Findings ------------------
+\item The largest batch ever reported in NMT (4M tokens) improved BLEU performance.  
+\item Increasing batch size reduced validation loss significantly.  
+\item Both low-resource and high-resource language pairs benefited.  
+\item GPipe’s efficiency enabled training such massive batches.  
+\item Depth scaling was particularly beneficial for scarce languages.  
+\item Width scaling primarily helped high-resource languages.  
+\item A trade-off exists: deeper models generalize better, wider models converge faster.  
+\item Pipeline parallelism enables distributed training with near-linear scaling.  
+\item The combination of GPipe and Transformer scaling demonstrated new state-of-the-art in MMT.  
+\item GPipe thus provides a general-purpose solution for scaling deep learning across domains.  
+
+\end{enumerate}
+
+\section{GPipe Parallelism Diagrams}
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[
+    node distance=1cm and 1cm,
+    box/.style={draw, thick, minimum width=1.2cm, minimum height=0.7cm, align=center},
+    fwd/.style={box, fill=blue!20},
+    bwd/.style={box, fill=brown!20},
+    loss/.style={box, fill=red!20},
+    update/.style={box, fill=green!20}
+]
+
+% ------------------- (a) Model Parallelism -------------------
+\node[fwd] (f0) {F$_0$};
+\node[bwd, right=of f0] (b0) {B$_0$};
+
+\node[fwd, above=of f0] (f1) {F$_1$};
+\node[bwd, right=of f1] (b1) {B$_1$};
+
+\node[fwd, above=of f1] (f2) {F$_2$};
+\node[bwd, right=of f2] (b2) {B$_2$};
+
+\node[fwd, above=of f2] (f3) {F$_3$};
+\node[bwd, right=of f3] (b3) {B$_3$};
+
+\node[loss, above=0.8cm of f3, minimum width=3.5cm] (loss) {Loss};
+
+% connections
+\draw[->, thick] (f0) -- (b0);
+\draw[->, thick] (f1) -- (b1);
+\draw[->, thick] (f2) -- (b2);
+\draw[->, thick] (f3) -- (b3);
+
+\draw[->, thick] (f0) -- (f1);
+\draw[->, thick] (f1) -- (f2);
+\draw[->, thick] (f2) -- (f3);
+
+\draw[->, thick] (b3) -- (b2);
+\draw[->, thick] (b2) -- (b1);
+\draw[->, thick] (b1) -- (b0);
+
+\draw[->, thick] (f3) -- (loss);
+\draw[->, thick] (b3) -- (loss);
+
+\node[below=0.8cm of f0, minimum width=3.5cm, align=center] (grad) {Gradients};
+
+\draw[->, thick] (b0) -- (grad);
+
+\node[below left=0.2cm and -2cm of f0, align=left] {(a)};
+
+% ------------------- (b) Naive Pipeline -------------------
+\node[fwd, right=8cm of f0] (nf0) {F$_0$};
+\node[bwd, right=of nf0] (nb0) {B$_0$};
+\node[fwd, below=of nf0] (nf1) {F$_0$};
+\node[bwd, right=of nf1] (nb1) {B$_0$};
+
+\draw[->, thick] (nf0) -- (nb0);
+\draw[->, thick] (nf1) -- (nb1);
+
+\node[right=of nb0, align=center] {Update};
+
+\node[below left=0.2cm and -1.2cm of nf1, align=left] {(b)};
+
+% ------------------- (c) Pipeline Parallelism -------------------
+\node[fwd, below=6cm of nf1] (cf00) {F$_{0,0}$};
+\node[fwd, right=of cf00] (cf01) {F$_{0,1}$};
+\node[fwd, right=of cf01] (cf02) {F$_{0,2}$};
+
+\node[fwd, above=of cf01] (cf10) {F$_{1,0}$};
+\node[fwd, right=of cf10] (cf11) {F$_{1,1}$};
+\node[fwd, right=of cf11] (cf12) {F$_{1,2}$};
+
+\node[fwd, above=of cf11] (cf20) {F$_{2,0}$};
+\node[fwd, right=of cf20] (cf21) {F$_{2,1}$};
+
+\node[fwd, above=of cf21] (cf30) {F$_{3,0}$};
+\node[fwd, right=of cf30] (cf31) {F$_{3,1}$};
+
+\node at ($(cf11)!0.5!(cf21)+(3,0)$) {Bubble};
+
+\node[below left=0.2cm and -2.5cm of cf00, align=left] {(c)};
+\end{tikzpicture}
+}
+\end{tikzpicture}
+
+
+\end{document}
